@@ -13,3 +13,16 @@ https://www.bretfisher.com/courses
 My other DevOps and Docker resources are at https://www.bretfisher.com/docker
 
 Feel free to create issues or PRs if you find a problem with examples in this repo!
+
+
+
+# Overview
+
+A Notesheet for the udemy course on Docker https://www.udemy.com/course/docker-mastery/learn/lecture/6489842#overview
+
+Project source files can be found at https://github.com/bretfisher/udemy-docker-mastery
+
+
+
+
+
