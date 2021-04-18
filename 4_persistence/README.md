@@ -112,3 +112,35 @@ $ echo "it is me you are looking for" > testme.txt
 ```
 
 Navigate to `http://localhost/testme.txt` or `http://localhost:8080/testme.txt` to see the file
+
+# Database Volume Assignment
+
+
+- Create a `postgres` container, version `9.6.1`
+- Use Docker Hub to learn `VOLUME` path and version needed to run it
+- Check logs, stop container
+- Create a new `postgres` container with same named volumne using `9.6.2`
+- Check logs to validate
+
+  - This specific version does not run on amd. To run on raspberry pi, the following command was substituted:
+
+    `docker container run -d --name psql -e POSTGRES_HOST_AUTH_METHOD=trust -v psql:/var/lib/postgresql/data postgres`
+
+```s
+docker container run -d --name psql -v psql:/var/lib/postgresql/data postgres:9.6.1
+docker container logs -f psql
+docker container stop psql
+docker container run -d --name psql2 -v psql:/var/lib/postgresql/data postgres:9.6.2
+docker container ps -a
+docker volume ls
+docker container logs -f psql2
+docker container stop psql2
+```
+
+# Bind Mounts Assignment
+
+- Using a Jekyll "Static Site Generator" to start a local web server
+
+```
+docker run -p 80:4000 --name jek -v ${pwd}:/site bretfisher/jekyll-serve
+```
