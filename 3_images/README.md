@@ -270,3 +270,29 @@ COPY index.html index.html
 > docker image tag nginx-with-html:latest bradtanders/nginx-with-html:latest
 ```
 
+## Image Cleanup
+
+Inspect system usage
+
+```docker
+> docker system df
+```
+
+Remove "dangling" images
+
+```docker
+> docker image prune
+```
+
+Remove images with no associated container running
+
+```docker
+> docker image prune -a
+```
+
+Removes stopped containers, unused networks, dangling images, dangling build cache
+
+```docker
+> docker system prune
+```
+

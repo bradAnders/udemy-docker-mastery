@@ -55,7 +55,7 @@ c734337a9b37   none      null      local
 The default driver is `bridge`
 
 ```docker
-> docker netowrk create my_app_net
+> docker network create my_app_net
 f2337102e4a2088dda27358d709f3df5a0b68a6bb1db81fc9ed236f2054c42dd
 > docker network ls
 NETWORK ID     NAME         DRIVER    SCOPE
