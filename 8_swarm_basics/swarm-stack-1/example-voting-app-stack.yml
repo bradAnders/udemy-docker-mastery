@@ -32,7 +32,7 @@ services:
     depends_on:
       - redis
     deploy:
-      replicas: 2
+      replicas: 5
       update_config:
         parallelism: 2
       restart_policy:
