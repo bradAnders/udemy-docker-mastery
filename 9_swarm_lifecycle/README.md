@@ -134,3 +134,138 @@ volumes:
   drupal-sites: {}
   drupal-themes: {}
 ```
+
+# Service Updates
+
+### Create a service
+
+```s
+$ ssh node1
+$ docker service create -p 8088:80 --name web nginx:1.13.7
+$ docker service ls
+ID             NAME      MODE         REPLICAS   IMAGE          PORTS
+v68p5reboacr   web       replicated   1/1        nginx:1.13.7   *:8088->80/tcp
+```
+
+### Scale the web service
+
+```s
+$ docker service scale web=5
+web scaled to 5
+overall progress: 5 out of 5 tasks 
+1/5: running   [==================================================>] 
+2/5: running   [==================================================>] 
+3/5: running   [==================================================>] 
+4/5: running   [==================================================>] 
+5/5: running   [==================================================>] 
+verify: Service converged 
+```
+
+### Change the image
+
+```s
+$ docker service update --image nginx:1.13.6 web
+```
+
+### Change the published port
+
+```s
+$ docker service update --publish-rm 8088 --publish-add 9090:80 web
+```
+
+### Forcing an update of a service performs a rebalancing
+
+```s
+$ docker service update --force web
+```
+
+### Cleanup by removing the service
+
+```s
+$ docker service rm web
+```
+
+# Docker Health Checks
+
+Does the container itself has a basic level of health?
+
+Health checks look at the container command's code:
+- `0`: OK
+- `1`: Error
+
+Container states:
+0. `preparing`
+1. `starting`
+2. `healthy`
+3. `unhealthy`
+
+- Can see it healthcheck from `docker container ls`
+- Can check last 5 with `docker container inspect`
+- Docker does not respont to healthchecks
+- Services will replace tasks if failing healthcheck
+
+
+### Start a Postgres Database Server with No Healthcheck
+
+```s
+$ docker container run --name p1 -e POSTGRES_HOST_AUTH_METHOD=trust -d postgres
+```
+
+### Start Another with a Healthcheck
+
+```s
+$ docker container run --name p2 -e POSTGRES_HOST_AUTH_METHOD=trust -d --health-cmd="pg_isready -U postgres || exit 1" postgres
+```
+
+### Watch the container heath
+
+```s
+$ watch docker container ls
+CONTAINER ID   IMAGE                    COMMAND                  CREATED          STATUS                            PORTS      NAMES
+938401fcf586   postgres                 "docker-entrypoint.s…"   5 seconds ago    Up 3 seconds (health: starting)   5432/tcp   p2
+e9a8344f3c29   postgres                 "docker-entrypoint.s…"   33 seconds ago   Up 28 seconds                     5432/tcp   p1
+```
+
+### Notice the health stats in the inspection
+
+```s
+$ docker container inspect p2
+...
+            "Health": {
+                "Status": "healthy",
+                "FailingStreak": 0,
+                "Log": [
+                    {
+                        "Start": "2021-04-25T05:08:08.8487524+01:00",
+                        "End": "2021-04-25T05:08:09.199273479+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2021-04-25T05:08:39.227757137+01:00",
+                        "End": "2021-04-25T05:08:39.55723717+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2021-04-25T05:09:09.576211133+01:00",
+                        "End": "2021-04-25T05:09:09.95579183+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2021-04-25T05:09:39.980050662+01:00",
+                        "End": "2021-04-25T05:09:40.337518308+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    },
+                    {
+                        "Start": "2021-04-25T05:10:10.360389148+01:00",
+                        "End": "2021-04-25T05:10:10.669898016+01:00",
+                        "ExitCode": 0,
+                        "Output": "/var/run/postgresql:5432 - accepting connections\n"
+                    }
+                ]
+            }
+...
+```
