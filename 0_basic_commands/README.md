@@ -57,8 +57,7 @@ PS C:\Users\Brad> docker container run --publish 80:80 nginx
 ```
 
 - `docker container run ... nginx` downloads image `nginx` from Docker Hub into a local container and runs it
-- `--publish` starts a new container from that image
-- `80:80` routes traffic from device port 80 to the container port 80
+- `--publish 80:80` routes traffic from device port 80 to the container port 80
 
 Test it out at [`localhost`](http://localhost) in your browser
 
